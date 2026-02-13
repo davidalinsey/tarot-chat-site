@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarot Chat — Your Personal Tarot Reader on WhatsApp</title>
+    <meta name="description" content="Get personal tarot readings anytime, right on WhatsApp. Speak from the heart — the cards will do the rest.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a14;
+            color: #e0dce8;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Starfield background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background:
+                radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.4), transparent),
+                radial-gradient(1px 1px at 30% 60%, rgba(255,255,255,0.3), transparent),
+                radial-gradient(1px 1px at 50% 10%, rgba(255,255,255,0.2), transparent),
+                radial-gradient(1px 1px at 70% 80%, rgba(255,255,255,0.3), transparent),
+                radial-gradient(1px 1px at 90% 40%, rgba(255,255,255,0.4), transparent),
+                radial-gradient(1px 1px at 15% 85%, rgba(255,255,255,0.2), transparent),
+                radial-gradient(1px 1px at 45% 45%, rgba(255,255,255,0.3), transparent),
+                radial-gradient(1px 1px at 80% 15%, rgba(255,255,255,0.2), transparent),
+                radial-gradient(1.5px 1.5px at 25% 35%, rgba(201,160,220,0.5), transparent),
+                radial-gradient(1.5px 1.5px at 65% 70%, rgba(201,160,220,0.4), transparent);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 80px 0 60px;
+        }
+
+        .hero-icon {
+            font-size: 64px;
+            margin-bottom: 24px;
+            display: block;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 48px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .tagline {
+            font-size: 20px;
+            color: #c9a0dc;
+            font-weight: 300;
+            margin-bottom: 32px;
+        }
+
+        .hero-text {
+            font-size: 18px;
+            line-height: 1.7;
+            color: #b8b0c8;
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+
+        /* CTA Button */
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: #25D366;
+            color: #fff;
+            text-decoration: none;
+            padding: 18px 40px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 24px rgba(37, 211, 102, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 32px rgba(37, 211, 102, 0.4);
+            background: #22c55e;
+        }
+
+        .cta-button svg {
+            width: 24px;
+            height: 24px;
+            fill: #fff;
+        }
+
+        /* How it works */
+        .section {
+            padding: 60px 0;
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .steps {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            gap: 20px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(201,160,220,0.1);
+            border-radius: 16px;
+            padding: 28px;
+        }
+
+        .step-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #c9a0dc;
+            min-width: 40px;
+        }
+
+        .step-content h3 {
+            font-size: 18px;
+            font-weight: 500;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .step-content p {
+            font-size: 15px;
+            color: #9990a8;
+            line-height: 1.6;
+        }
+
+        /* Pricing */
+        .pricing-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px;
+        }
+
+        .pricing-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(201,160,220,0.15);
+            border-radius: 16px;
+            padding: 32px 24px;
+            text-align: center;
+            transition: border-color 0.3s ease;
+        }
+
+        .pricing-card:hover {
+            border-color: rgba(201,160,220,0.35);
+        }
+
+        .pricing-card.featured {
+            border-color: #c9a0dc;
+            background: rgba(201,160,220,0.06);
+        }
+
+        .pricing-label {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #c9a0dc;
+            margin-bottom: 12px;
+        }
+
+        .pricing-price {
+            font-family: 'Playfair Display', serif;
+            font-size: 36px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .pricing-period {
+            font-size: 14px;
+            color: #8880a0;
+            margin-bottom: 20px;
+        }
+
+        .pricing-features {
+            list-style: none;
+            text-align: left;
+        }
+
+        .pricing-features li {
+            padding: 8px 0;
+            font-size: 14px;
+            color: #b8b0c8;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+
+        .pricing-features li::before {
+            content: '\2727 ';
+            color: #c9a0dc;
+        }
+
+        /* Testimonial / Quote */
+        .quote-section {
+            text-align: center;
+            padding: 60px 0;
+        }
+
+        .quote {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-style: italic;
+            color: #c9a0dc;
+            max-width: 550px;
+            margin: 0 auto 16px;
+            line-height: 1.5;
+        }
+
+        .quote-attr {
+            font-size: 14px;
+            color: #7870a0;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 48px 0;
+            border-top: 1px solid rgba(201,160,220,0.1);
+            margin-top: 40px;
+        }
+
+        footer p {
+            font-size: 14px;
+            color: #6860a0;
+            margin-bottom: 8px;
+        }
+
+        footer a {
+            color: #c9a0dc;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+            .hero { padding: 60px 0 40px; }
+            h1 { font-size: 36px; }
+            .tagline { font-size: 17px; }
+            .hero-text { font-size: 16px; }
+            .cta-button { padding: 16px 32px; font-size: 16px; }
+            h2 { font-size: 26px; }
+            .step { flex-direction: column; gap: 12px; }
+            .pricing-price { font-size: 30px; }
+            .quote { font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Hero -->
+    <section class="hero">
+        <span class="hero-icon">🌙</span>
+        <h1>Tarot Chat</h1>
+        <p class="tagline">Your personal tarot reader, right on WhatsApp</p>
+        <p class="hero-text">
+            No apps to download. No appointments to book. Just open WhatsApp, speak from the heart, and let the cards reveal what you need to hear.
+        </p>
+        <a href="https://wa.me/18573671278?text=Hi" class="cta-button">
+            <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            Start Your Reading
+        </a>
+    </section>
+
+    <!-- How it works -->
+    <section class="section">
+        <h2>How It Works</h2>
+        <div class="steps">
+            <div class="step">
+                <span class="step-number">1</span>
+                <div class="step-content">
+                    <h3>Open the chat</h3>
+                    <p>Tap the button above to start a WhatsApp conversation. No sign-ups, no downloads.</p>
+                </div>
+            </div>
+            <div class="step">
+                <span class="step-number">2</span>
+                <div class="step-content">
+                    <h3>Share what's on your mind</h3>
+                    <p>Tell us what you're going through — a crossroads, a relationship, a decision, or just a feeling you can't shake.</p>
+                </div>
+            </div>
+            <div class="step">
+                <span class="step-number">3</span>
+                <div class="step-content">
+                    <h3>Receive your reading</h3>
+                    <p>The cards are drawn and interpreted just for you. Personal, thoughtful, and always honest.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quote -->
+    <section class="quote-section">
+        <p class="quote">"I've been expecting you."</p>
+        <p class="quote-attr">— Your Tarot Reader</p>
+    </section>
+
+    <!-- Pricing -->
+    <section class="section">
+        <h2>Simple Pricing</h2>
+        <div class="pricing-cards">
+            <div class="pricing-card">
+                <p class="pricing-label">Try it free</p>
+                <p class="pricing-price">Free</p>
+                <p class="pricing-period">2 readings to start</p>
+                <ul class="pricing-features">
+                    <li>Full personalised readings</li>
+                    <li>Three-card spreads</li>
+                    <li>No card required</li>
+                </ul>
+            </div>
+            <div class="pricing-card featured">
+                <p class="pricing-label">Unlimited</p>
+                <p class="pricing-price">$9.99</p>
+                <p class="pricing-period">per month</p>
+                <ul class="pricing-features">
+                    <li>Unlimited readings</li>
+                    <li>Deeper multi-card spreads</li>
+                    <li>Cancel anytime</li>
+                </ul>
+            </div>
+            <div class="pricing-card">
+                <p class="pricing-label">Single reading</p>
+                <p class="pricing-price">$2.99</p>
+                <p class="pricing-period">one-time</p>
+                <ul class="pricing-features">
+                    <li>One full reading</li>
+                    <li>No subscription needed</li>
+                    <li>Pay as you go</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="hero" style="padding: 60px 0;">
+        <h2>Ready to see what the cards hold?</h2>
+        <p class="hero-text" style="margin-bottom: 32px;">
+            Your first two readings are free. No sign-up needed — just open WhatsApp and say hello.
+        </p>
+        <a href="https://wa.me/18573671278?text=Hi" class="cta-button">
+            <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            Message Us on WhatsApp
+        </a>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>Tarot Chat &copy; 2026. All readings are for entertainment purposes.</p>
+        <p>Questions? <a href="mailto:hello@trytarotchat.com">hello@trytarotchat.com</a></p>
+    </footer>
+
+</div>
+
+</body>
+</html>
